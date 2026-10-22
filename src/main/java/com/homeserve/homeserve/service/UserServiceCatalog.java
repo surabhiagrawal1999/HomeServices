@@ -4,6 +4,7 @@ import com.homeserve.homeserve.dto.LoginRequest;
 import com.homeserve.homeserve.dto.UserRequest;
 import com.homeserve.homeserve.model.User;
 import com.homeserve.homeserve.repository.UserRepository;
+import com.homeserve.homeserve.security.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,12 @@ public class UserServiceCatalog {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserServiceCatalog(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    public UserServiceCatalog(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService){
         this.userRepository= userRepository;
         this.passwordEncoder= passwordEncoder;
+        this.jwtService= jwtService;
     }
 
     public User newUser(UserRequest request){
@@ -32,6 +35,7 @@ public class UserServiceCatalog {
     public String login(LoginRequest loginRequest){
         User user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow();
 
-        return passwordEncoder.matches(loginRequest.getPassword(),user.getPassword())?"Login Successful": "Password or Email is wrong";
+        //return passwordEncoder.matches(loginRequest.getPassword(),user.getPassword())?"Login Successful": "Password or Email is wrong";
+        return passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())?jwtService.generateToken(loginRequest.getEmail()): "Please enter correct email and/or password";
     }
 }

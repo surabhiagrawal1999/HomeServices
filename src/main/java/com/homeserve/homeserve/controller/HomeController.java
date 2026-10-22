@@ -64,6 +64,7 @@ public class HomeController {
 
     @PostMapping("/users")
     public User registerUser(@RequestBody @Valid UserRequest request){
+
         return userServiceCatalog.newUser(request);
     }
 
